@@ -21,3 +21,5 @@ m:
 prepare:
     cargo install cargo-watch
     cargo install sqlx-cli
+    cargo install grow-rs --no-default-features --features "sqlx fake" --force
+

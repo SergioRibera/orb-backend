@@ -42,7 +42,7 @@ items:
       type: json
       data: |-
         {
-          "email": "emilianom127@gmail.com",
+          "email": "emilianom129@gmail.com",
           "password": "Abecedario09!"
         }
 - info:
@@ -61,4 +61,3 @@ items:
         {
           "refresh_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTlkYTA0Ni1iMGIwLTczM2YtOTE5NS0wNTVhMmU3NzZmZWUiLCJleHAiOjE3NzcxMTU2NjN9.awlZsZoLnt0qMQyy5XD0WsPf4v33qpx6G4oxIYDiQks"
         }
-

@@ -2,6 +2,7 @@ use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 
 pub struct AppState {
     pub db: Pool<Postgres>,
+    pub jwt_secret: String,
 }
 
 pub async fn create_pool(database_url: &str) -> Pool<Postgres> {

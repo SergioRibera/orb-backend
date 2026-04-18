@@ -1,6 +1,7 @@
 use actix_web::{HttpResponse, ResponseError};
 use thiserror::Error;
 
+#[allow(dead_code)]
 #[derive(Debug, Error)]
 pub enum AppError {
     #[error("Unauthorized")]
@@ -15,18 +16,19 @@ pub enum AppError {
 
 impl ResponseError for AppError {
     fn error_response(&self) -> HttpResponse {
+        let msg = self.to_string();
         match self {
             AppError::Unauthorized => {
-                HttpResponse::Unauthorized().json(serde_json::json!({ "error": "Unauthorized" }))
+                HttpResponse::Unauthorized().json(serde_json::json!({ "message": msg }))
             }
             AppError::NotFound => {
-                HttpResponse::NotFound().json(serde_json::json!({ "error": "Not found" }))
+                HttpResponse::NotFound().json(serde_json::json!({ "message": msg }))
             }
-            AppError::Conflict(msg) => {
-                HttpResponse::Conflict().json(serde_json::json!({ "error": msg }))
+            AppError::Conflict(_) => {
+                HttpResponse::Conflict().json(serde_json::json!({ "message": msg }))
             }
             AppError::Internal(_) => HttpResponse::InternalServerError()
-                .json(serde_json::json!({ "error": "Internal server error" })),
+                .json(serde_json::json!({ "message": "Internal server error" })),
         }
     }
 }

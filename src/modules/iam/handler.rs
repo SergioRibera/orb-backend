@@ -28,6 +28,7 @@ use crate::shared::repository::PgRepository;
     )
 )]
 #[post("/users")]
+#[actix_web_grants::protect("users:write")]
 pub async fn register(
     state: Data<AppState>,
     body: Json<RegisterRequest>,
@@ -46,6 +47,7 @@ pub async fn register(
     )
 )]
 #[get("/users")]
+#[actix_web_grants::protect("users:read")]
 pub async fn list_users(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<User>::new(state.db.clone());
     let res = service::list_users(&repo).await?;
@@ -65,6 +67,7 @@ pub async fn list_users(state: Data<AppState>) -> Result<HttpResponse, AppError>
     )
 )]
 #[post("/roles")]
+#[actix_web_grants::protect("roles:write")]
 pub async fn create_role(
     state: Data<AppState>,
     body: Json<CreateRoleRequest>,
@@ -83,6 +86,7 @@ pub async fn create_role(
     )
 )]
 #[get("/roles")]
+#[actix_web_grants::protect("roles:read")]
 pub async fn list_roles(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Role>::new(state.db.clone());
     let res = service::list_roles(&repo).await?;
@@ -103,6 +107,7 @@ pub async fn list_roles(state: Data<AppState>) -> Result<HttpResponse, AppError>
     )
 )]
 #[post("/users/{user_id}/roles/{role_id}")]
+#[actix_web_grants::protect("roles:write")]
 pub async fn assign_role_to_user(
     state: Data<AppState>,
     path: Path<(Uuid, Uuid)>,
@@ -127,6 +132,7 @@ pub async fn assign_role_to_user(
     )
 )]
 #[post("/roles/{role_id}/permissions/{permission_id}")]
+#[actix_web_grants::protect("roles:write")]
 pub async fn assign_permission_to_role(
     state: Data<AppState>,
     path: Path<(Uuid, Uuid)>,
@@ -150,6 +156,7 @@ pub async fn assign_permission_to_role(
     )
 )]
 #[post("/permissions")]
+#[actix_web_grants::protect("roles:write")]
 pub async fn create_permission(
     state: Data<AppState>,
     body: Json<CreatePermissionRequest>,
@@ -168,6 +175,7 @@ pub async fn create_permission(
     )
 )]
 #[get("/permissions")]
+#[actix_web_grants::protect("roles:read")]
 pub async fn list_permissions(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Permission>::new(state.db.clone());
     let res = service::list_permissions(&repo).await?;

@@ -6,6 +6,8 @@ use thiserror::Error;
 pub enum AppError {
     #[error("Unauthorized")]
     Unauthorized,
+    #[error("Forbidden")]
+    Forbidden,
     #[error("Not found")]
     NotFound,
     #[error("Conflict: {0}")]
@@ -20,6 +22,9 @@ impl ResponseError for AppError {
         match self {
             AppError::Unauthorized => {
                 HttpResponse::Unauthorized().json(serde_json::json!({ "message": msg }))
+            }
+            AppError::Forbidden => {
+                HttpResponse::Forbidden().json(serde_json::json!({ "message": msg }))
             }
             AppError::NotFound => {
                 HttpResponse::NotFound().json(serde_json::json!({ "message": msg }))

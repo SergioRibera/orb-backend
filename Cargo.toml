@@ -31,3 +31,4 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 tracing-actix-web = "0.7"
 utoipa = { version = "5", features = ["actix_extras", "uuid", "time", "decimal"] }
 utoipa-scalar = { version = "0.3", features = ["actix-web"] }
+vaultara-sdk = { git = "https://github.com/RustLangES/Vaultara" }

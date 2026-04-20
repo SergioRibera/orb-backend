@@ -1,60 +1,18 @@
 # Auth Module
 
-Handles user registration, login, and JWT token lifecycle.
+Handles session management only. Does not own any tables — reads users via IAM's `UserRepository`.
 
 ## Endpoints
 
 Base path: `/api/v1/auth`
 
-### POST `/register`
+### POST /login
 
-Creates a new user account.
-
-**Request**
 ```json
-{
-  "name": "Juan",
- "second_name": "Carlos",
-  "first_surname": "García",
-  "second_surname": "López",
-  "email": "juan@example.com",
-  "password": "secret123"
-}
-```
+// Request
+{ "email": "user@example.com", "password": "secret" }
 
-> `second_name`, `first_surname`, `second_surname` are optional.
-
-**Response `201 Created`**
-```json
-{
-  "id": "019703a1-...",
-  "email": "juan@example.com"
-}
-```
-
-**Errors**
-
-| Status | Condition |
-|--------|-----------|
-| `409 Conflict` | Email already registered |
-| `500 Internal Server Error` | bcrypt or DB failure |
-
----
-
-### POST `/login`
-
-Authenticates a user and returns JWT tokens.
-
-**Request**
-```json
-{
-  "email": "juan@example.com",
-  "password": "secret123"
-}
-```
-
-**Response `200 OK`**
-```json
+// Response 200
 {
   "access_token": "<jwt>",
   "refresh_token": "<jwt>",
@@ -62,28 +20,13 @@ Authenticates a user and returns JWT tokens.
 }
 ```
 
-**Errors**
+### POST /refresh
 
-| Status | Condition |
-|--------|-----------|
-| `401 Unauthorized` | User not found or wrong password |
-| `500 Internal Server Error` | bcrypt or JWT failure |
-
----
-
-### POST `/refresh`
-
-Issues new tokens from a valid refresh token.
-
-**Request**
 ```json
-{
-  "refresh_token": "<jwt>"
-}
-```
+// Request
+{ "refresh_token": "<jwt>" }
 
-**Response `200 OK`**
-```json
+// Response 200
 {
   "access_token": "<jwt>",
   "refresh_token": "<jwt>",
@@ -91,53 +34,11 @@ Issues new tokens from a valid refresh token.
 }
 ```
 
-**Errors**
+## Tokens
 
-| Status | Condition |
-|--------|-----------|
-| `401 Unauthorized` | Token invalid, expired, or user not found |
+| Token         | TTL    | Payload                              |
+|---------------|--------|--------------------------------------|
+| access_token  | 15 min | sub, email, roles[], permissions[]   |
+| refresh_token | 7 days | sub                                  |
 
----
-
-## Token Lifetimes
-
-| Token         | Lifetime   |
-|---------------|------------|
-| Access token  | 15 minutes |
-| Refresh token | 7 days     |
-
-Both tokens are signed with **HS256** using `JWT_SECRET` from the environment.
-
-## JWT Payload
-
-**Access token**
-```json
-{
-  "sub": "<user_uuid>",
-  "email": "juan@example.com",
-  "exp": 1234567890
-}
-```
-
-**Refresh token**
-```json
-{
-  "sub": "<user_uuid>",
-  "exp": 1234567890
-}
-```
-
-## Password Hashing
-
-Passwords are hashed with **bcrypt** at `DEFAULT_COST` (12 rounds) before storage. Plain passwords are never persisted.
-
-## File Structure
-
-```
-auth/
-├── mod.rs          — route config
-├── handler.rs      — HTTP layer (deserialize, call service, serialize)
-├── service.rs      — business logic (bcrypt, JWT)
-├── repository.rs   — SQL queries
-└── model.rs        — User, DTOs, JWT claims
-```
+Algorithm: HS256. Secret from `JWT_SECRET` env var.

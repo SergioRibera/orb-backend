@@ -1,63 +1,479 @@
 name: ORB Backend API
 items:
-- info:
-    name: HealtCheck
-    type: http
-    seq: 1
-  http:
-    method: GET
-    url: '{{api}}/hc'
-- info:
-    name: Register user
-    type: http
-    seq: 2
-  http:
-    method: POST
-    url: '{{api}}/auth/register'
-    headers:
-    - key: Content-type
-      value: application/json
-    body:
-      type: json
-      data: |-
-        {
-          "name": "Emiliano",
-          "first_surname": "Maldonado",
-          "second_surname": "Garza",
-          "email": "emilianom127@gmail.com",
-          "password": "Abecedario09!"
-        }
-  description: Register a user on API v1
-- info:
-    name: Login user
-    type: http
-    seq: 3
-  http:
-    method: POST
-    url: '{{api}}/auth/login'
-    headers:
-    - key: Content-type
-      value: application/json
-    body:
-      type: json
-      data: |-
-        {
-          "email": "emilianom129@gmail.com",
-          "password": "Abecedario09!"
-        }
-- info:
-    name: Refresh token
-    type: http
-    seq: 4
-  http:
-    method: POST
-    url: '{{api}}/auth/refresh'
-    headers:
-    - key: Content-type
-      value: application/json
-    body:
-      type: json
-      data: |-
-        {
-          "refresh_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTlkYTA0Ni1iMGIwLTczM2YtOTE5NS0wNTVhMmU3NzZmZWUiLCJleHAiOjE3NzcxMTU2NjN9.awlZsZoLnt0qMQyy5XD0WsPf4v33qpx6G4oxIYDiQks"
-        }
+  # ── Health ──────────────────────────────────────────────────────────────────
+  - info:
+      name: Health Check
+      type: http
+      seq: 1
+    http:
+      method: GET
+      url: '{{api}}/hc'
+
+  # ── Auth ─────────────────────────────────────────────────────────────────────
+  - name: Auth
+    items:
+      - info:
+          name: Login
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/auth/login'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "email": "emilianom129@gmail.com",
+                "password": "Abecedario09!"
+              }
+
+      - info:
+          name: Refresh token
+          type: http
+          seq: 2
+        http:
+          method: POST
+          url: '{{api}}/auth/refresh'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTlkYTA0Ni1iMGIwLTczM2YtOTE5NS0wNTVhMmU3NzZmZWUiLCJleHAiOjE3NzcxMTU2NjN9.awlZsZoLnt0qMQyy5XD0WsPf4v33qpx6G4oxIYDiQks"
+              }
+
+  # ── IAM ──────────────────────────────────────────────────────────────────────
+  - name: IAM
+    items:
+      - name: Users
+        items:
+          - info:
+              name: Register user
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/users'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "Emiliano",
+                    "first_surname": "Maldonado",
+                    "second_surname": "Garza",
+                    "email": "emilianom129@gmail.com",
+                    "password": "Abecedario09!"
+                  }
+
+          - info:
+              name: List users
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/users'
+
+      - name: Roles
+        items:
+          - info:
+              name: Create role
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/roles'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "admin"
+                  }
+
+          - info:
+              name: List roles
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/roles'
+
+          - info:
+              name: Assign role to user
+              type: http
+              seq: 3
+            http:
+              method: POST
+              url: '{{api}}/users/USER_ID/roles/ROLE_ID'
+
+      - name: Permissions
+        items:
+          - info:
+              name: Create permission
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/permissions'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "products:write"
+                  }
+
+          - info:
+              name: List permissions
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/permissions'
+
+          - info:
+              name: Assign permission to role
+              type: http
+              seq: 3
+            http:
+              method: POST
+              url: '{{api}}/roles/ROLE_ID/permissions/PERMISSION_ID'
+
+  # ── Stores ───────────────────────────────────────────────────────────────────
+  - name: Stores
+    items:
+      - info:
+          name: Create store
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/stores'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "name": "Sucursal Centro",
+                "address": "Av. Juárez 123"
+              }
+
+      - info:
+          name: List stores
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{api}}/stores'
+
+      - name: Devices
+        items:
+          - info:
+              name: Create device
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/stores/STORE_ID/devices'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "Caja 1"
+                  }
+
+          - info:
+              name: List devices
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/stores/STORE_ID/devices'
+
+  # ── Catalog ──────────────────────────────────────────────────────────────────
+  - name: Catalog
+    items:
+      - name: Categories
+        items:
+          - info:
+              name: Create category
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/categories'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "Bebidas"
+                  }
+
+          - info:
+              name: List categories
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/categories'
+
+      - name: Products
+        items:
+          - info:
+              name: Create product
+              type: http
+              seq: 1
+            http:
+              method: POST
+              url: '{{api}}/products'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "name": "Coca-Cola 600ml",
+                    "barcode": "7501055361013",
+                    "description": "Refresco de cola",
+                    "cost": 12.50
+                  }
+
+          - info:
+              name: List products
+              type: http
+              seq: 2
+            http:
+              method: GET
+              url: '{{api}}/products'
+
+          - info:
+              name: Assign category to product
+              type: http
+              seq: 3
+            http:
+              method: POST
+              url: '{{api}}/products/PRODUCT_ID/categories/CATEGORY_ID'
+
+          - info:
+              name: Set product price for store
+              type: http
+              seq: 4
+            http:
+              method: POST
+              url: '{{api}}/products/PRODUCT_ID/stores/STORE_ID/price'
+              headers:
+                - key: Content-Type
+                  value: application/json
+              body:
+                type: json
+                data: |-
+                  {
+                    "price": 18.00
+                  }
+
+  # ── Inventory ────────────────────────────────────────────────────────────────
+  - name: Inventory
+    items:
+      - info:
+          name: Create movement
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/inventory/movements'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "product_id": "PRODUCT_ID",
+                "store_id": "STORE_ID",
+                "type": "purchase",
+                "quantity": 100
+              }
+
+      - info:
+          name: List movements by store
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{api}}/inventory/movements/stores/STORE_ID'
+
+      - info:
+          name: Get stock
+          type: http
+          seq: 3
+        http:
+          method: GET
+          url: '{{api}}/inventory/stock/PRODUCT_ID/stores/STORE_ID'
+
+  # ── Sales ────────────────────────────────────────────────────────────────────
+  - name: Sales
+    items:
+      - info:
+          name: Create sale
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/sales'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "store_id": "STORE_ID",
+                "user_id": "USER_ID",
+                "device_id": "DEVICE_ID",
+                "folio": "T-0001",
+                "items": [
+                  {
+                    "product_id": "PRODUCT_ID",
+                    "quantity": 2,
+                    "price": 18.00
+                  }
+                ],
+                "payments": [
+                  {
+                    "method": "cash",
+                    "amount": 36.00
+                  }
+                ]
+              }
+
+      - info:
+          name: List sales by store
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{api}}/sales/stores/STORE_ID'
+
+      - info:
+          name: Get sale detail
+          type: http
+          seq: 3
+        http:
+          method: GET
+          url: '{{api}}/sales/SALE_ID'
+
+  # ── Cash ─────────────────────────────────────────────────────────────────────
+  - name: Cash
+    items:
+      - info:
+          name: Open session
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/cash/sessions'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "store_id": "STORE_ID",
+                "user_id": "USER_ID",
+                "device_id": "DEVICE_ID",
+                "opening_amount": 500.00
+              }
+
+      - info:
+          name: Close session
+          type: http
+          seq: 2
+        http:
+          method: POST
+          url: '{{api}}/cash/sessions/SESSION_ID/close'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "closing_amount": 836.00,
+                "expected_amount": 836.00
+              }
+
+      - info:
+          name: List sessions by store
+          type: http
+          seq: 3
+        http:
+          method: GET
+          url: '{{api}}/cash/sessions/stores/STORE_ID'
+
+      - info:
+          name: Get session
+          type: http
+          seq: 4
+        http:
+          method: GET
+          url: '{{api}}/cash/sessions/SESSION_ID'
+
+  # ── Customers ────────────────────────────────────────────────────────────────
+  - name: Customers
+    items:
+      - info:
+          name: Create customer
+          type: http
+          seq: 1
+        http:
+          method: POST
+          url: '{{api}}/customers'
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            type: json
+            data: |-
+              {
+                "name": "Juan García",
+                "phone": "8112345678",
+                "email": "juan@example.com"
+              }
+
+      - info:
+          name: List customers
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{api}}/customers'
+
+      - info:
+          name: Get customer
+          type: http
+          seq: 3
+        http:
+          method: GET
+          url: '{{api}}/customers/CUSTOMER_ID'

@@ -18,6 +18,15 @@ cm name:
 m:
     sqlx migrate run
 
+cs name:
+    grow new {{ name }}
+
+s:
+    grow run --all
+
+seed-sql:
+    psql $DATABASE_URL -f seeders/seed_sql.sql
+
 prepare:
     cargo install cargo-watch
     cargo install sqlx-cli

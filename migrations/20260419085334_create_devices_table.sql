@@ -1,0 +1,7 @@
+-- Active: 1757026795294@@127.0.0.1@5432@orb
+CREATE TABLE devices (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v7 (),
+    store_id UUID NOT NULL REFERENCES stores (id) ON DELETE CASCADE,
+    name VARCHAR,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

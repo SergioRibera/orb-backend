@@ -1,8 +1,8 @@
 use uuid::Uuid;
 
-use super::PgRepository;
-use crate::modules::auth::model::Role;
+use crate::modules::iam::model::Role;
 use crate::shared::errors::AppError;
+use crate::shared::repository::PgRepository;
 
 pub trait RoleRepository: Send + Sync {
     async fn create(&self, name: &str) -> Result<Role, AppError>;
@@ -49,7 +49,8 @@ impl RoleRepository for PgRepository<Role> {
     async fn assign_permission(&self, role_id: Uuid, permission_id: Uuid) -> Result<(), AppError> {
         sqlx::query!(
             "INSERT INTO catalogs.role_permissions (role_id, permission_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-            role_id, permission_id
+            role_id,
+            permission_id
         )
         .execute(&self.pool)
         .await

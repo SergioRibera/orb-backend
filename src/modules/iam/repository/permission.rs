@@ -1,6 +1,6 @@
-use super::PgRepository;
-use crate::modules::auth::model::Permission;
+use crate::modules::iam::model::Permission;
 use crate::shared::errors::AppError;
+use crate::shared::repository::PgRepository;
 
 pub trait PermissionRepository: Send + Sync {
     async fn create(&self, name: &str) -> Result<Permission, AppError>;

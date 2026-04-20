@@ -1,5 +1,7 @@
+use actix_cors::Cors;
 use actix_web::{
     App, HttpResponse, HttpServer, get,
+    http::header,
     web::{self, Data},
 };
 use tracing::info;
@@ -48,20 +50,50 @@ async fn main() -> std::io::Result<()> {
     let cfg = Config::from_env();
     let pool = create_pool(&cfg.database_url).await;
     let jwt_secret = cfg.jwt_secret.clone();
+    let allowed_origins = cfg.allowed_origins.clone();
+    let allowed_methods = cfg.allowed_methods.clone();
 
     info!("Server running on {}:{}", cfg.host, cfg.port);
 
     HttpServer::new(move || {
+        let mut cors = Cors::default()
+            .allowed_headers([header::AUTHORIZATION, header::CONTENT_TYPE, header::ACCEPT])
+            .max_age(3600);
+
+        for origin in &allowed_origins {
+            if origin == "*" {
+                cors = cors.allow_any_origin();
+                break;
+            } else {
+                cors = cors.allowed_origin(origin);
+            }
+        }
+
+        cors = cors.allowed_methods(
+            allowed_methods
+                .iter()
+                .map(|m| m.as_str())
+                .collect::<Vec<_>>(),
+        );
+
         App::new()
             .app_data(Data::new(AppState {
                 db: pool.clone(),
                 jwt_secret: jwt_secret.clone(),
             }))
+            .wrap(cors)
             .wrap(TracingLogger::default())
             .service(
                 web::scope("/api/v1")
                     .service(health_check)
-                    .configure(modules::auth::config),
+                    .configure(modules::auth::config)
+                    .configure(modules::iam::config)
+                    .configure(modules::stores::config)
+                    .configure(modules::catalog::config)
+                    .configure(modules::inventory::config)
+                    .configure(modules::sales::config)
+                    .configure(modules::cash::config)
+                    .configure(modules::customers::config),
             )
     })
     .bind((cfg.host, cfg.port))?

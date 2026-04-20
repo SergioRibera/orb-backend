@@ -1,8 +1,8 @@
 use uuid::Uuid;
 
-use super::PgRepository;
-use crate::modules::auth::model::{User, UserAccess};
+use crate::modules::iam::model::{User, UserAccess};
 use crate::shared::errors::AppError;
+use crate::shared::repository::PgRepository;
 
 pub trait UserRepository: Send + Sync {
     async fn find_by_email(&self, email: &str) -> Result<Option<User>, AppError>;
@@ -18,6 +18,7 @@ pub trait UserRepository: Send + Sync {
         password_hash: &str,
     ) -> Result<User, AppError>;
     async fn find_access(&self, user_id: Uuid) -> Result<UserAccess, AppError>;
+    async fn list(&self) -> Result<Vec<User>, AppError>;
 }
 
 impl UserRepository for PgRepository<User> {
@@ -97,5 +98,16 @@ impl UserRepository for PgRepository<User> {
         .map_err(|e| AppError::Internal(e.to_string()))?;
 
         Ok(UserAccess { roles, permissions })
+    }
+
+    async fn list(&self) -> Result<Vec<User>, AppError> {
+        sqlx::query_as!(
+            User,
+            "SELECT id, name, second_name, first_surname, second_surname, email, password, created_at, updated_at
+             FROM users ORDER BY name"
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| AppError::Internal(e.to_string()))
     }
 }

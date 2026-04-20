@@ -1,0 +1,12 @@
+{
+    customers: [
+        ( name: "Juan García",      phone: "8112345678", email: "juan.garcia@gmail.com" ),
+        ( name: "María Hernández",  phone: "8129876543", email: "maria.hdz@gmail.com" ),
+        ( name: "Roberto Silva",    phone: "8183456789", email: "roberto.silva@hotmail.com" ),
+        ( name: "Laura Mendoza",    phone: "8114567890", email: "laura.mendoza@gmail.com" ),
+        ( name: "Pedro Reyes",      phone: "8115678901" ),
+        ( name: "Sofía Castillo",   email: "sofia.castillo@outlook.com" ),
+        ( name: "Diego Morales",    phone: "8116789012" ),
+        ( name: "Valeria Ríos",     phone: "8117890123", email: "valeria.rios@gmail.com" ),
+    ],
+}

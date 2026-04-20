@@ -1,0 +1,7 @@
+{
+    stores: [
+        ( name: "Sucursal Centro",    address: "Av. Juárez 123, Centro" ),
+        ( name: "Sucursal Norte",     address: "Blvd. Díaz Ordaz 456, Col. Linda Vista" ),
+        ( name: "Sucursal San Pedro", address: "Av. Vasconcelos 789, San Pedro Garza García" ),
+    ],
+}

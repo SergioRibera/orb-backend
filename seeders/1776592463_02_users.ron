@@ -1,0 +1,18 @@
+{
+    users: [
+        (
+            name: "Ana",
+            first_surname: "López",
+            second_surname: "Torres",
+            email: "ana.lopez@orb.com",
+            password: "$2b$12$5Xuv9LH4v8yVgQG0XIWotuWfXJa.erVAbtZC3sWjgIE2ysnIRBEBK",
+        ),
+        (
+            name: "Carlos",
+            first_surname: "Ramírez",
+            second_surname: "Vega",
+            email: "carlos.ramirez@orb.com",
+            password: "$2b$12$5Xuv9LH4v8yVgQG0XIWotuWfXJa.erVAbtZC3sWjgIE2ysnIRBEBK",
+        ),
+    ],
+}

@@ -1,0 +1,21 @@
+{
+    #[schema = "catalogs"]
+    permissions: [
+        ( name: "users:read" ),
+        ( name: "users:write" ),
+        ( name: "roles:read" ),
+        ( name: "roles:write" ),
+        ( name: "stores:read" ),
+        ( name: "stores:write" ),
+        ( name: "products:read" ),
+        ( name: "products:write" ),
+        ( name: "inventory:read" ),
+        ( name: "inventory:write" ),
+        ( name: "sales:read" ),
+        ( name: "sales:write" ),
+        ( name: "cash:read" ),
+        ( name: "cash:write" ),
+        ( name: "customers:read" ),
+        ( name: "customers:write" ),
+    ],
+}

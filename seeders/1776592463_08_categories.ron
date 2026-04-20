@@ -1,0 +1,12 @@
+{
+    categories: [
+        ( name: "Bebidas" ),
+        ( name: "Snacks" ),
+        ( name: "Lacteos" ),
+        ( name: "Panaderia" ),
+        ( name: "Limpieza" ),
+        ( name: "Higiene Personal" ),
+        ( name: "Dulces y Chocolates" ),
+        ( name: "Enlatados" ),
+    ],
+}

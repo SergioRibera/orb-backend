@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT DISTINCT p.name FROM catalogs.permissions p\n             JOIN catalogs.role_permissions rp ON rp.permission_id = p.id\n             JOIN user_roles ur ON ur.role_id = rp.role_id\n             WHERE ur.user_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c9a35139e1d29759bf55bf8b9641935c09ee6c33e1cc042a92b6f13d8071f99a"
+}

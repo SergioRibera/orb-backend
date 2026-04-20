@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT r.name FROM catalogs.roles r\n             JOIN user_roles ur ON ur.role_id = r.id\n             WHERE ur.user_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "265374dfcdd63f00c0b5a1cac8221464bdf539ec5e91f18f694c2557addfd832"
+}

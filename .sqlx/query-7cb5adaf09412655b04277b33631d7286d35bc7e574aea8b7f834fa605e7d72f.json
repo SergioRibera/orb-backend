@@ -1,0 +1,42 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO product_prices (product_id, store_id, price)\n             VALUES ($1, $2, $3)\n             ON CONFLICT (product_id, store_id) DO UPDATE SET price = EXCLUDED.price\n             RETURNING id, product_id, store_id, price",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "product_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "store_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "price",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Numeric"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7cb5adaf09412655b04277b33631d7286d35bc7e574aea8b7f834fa605e7d72f"
+}

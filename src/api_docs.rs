@@ -22,7 +22,7 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
         "withDefaultFonts": true,
         "operationTitleSource": "summary",
         "hideClientButton": false,
-        "isEditable": false,
+        "isEditable": false
       }'
     >$spec</script>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>

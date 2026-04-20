@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, sale_id, method, amount FROM payments WHERE sale_id = $1",
+  "query": "SELECT id, sale_id, method, amount, reference FROM payments WHERE sale_id = $1",
   "describe": {
     "columns": [
       {
@@ -22,6 +22,11 @@
         "ordinal": 3,
         "name": "amount",
         "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "reference",
+        "type_info": "Varchar"
       }
     ],
     "parameters": {
@@ -33,8 +38,9 @@
       false,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
-  "hash": "d8cf11184772486c4f57a4c15f68491e3b716f0dd521fe5cf397bce5865443c7"
+  "hash": "629bd91e49a82ebfc3a304d5e28617dc6c2ec010747742021277e689853632fc"
 }

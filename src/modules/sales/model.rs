@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -37,20 +38,20 @@ pub struct Payment {
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct SaleItemInput {
     pub product_id: String,
     pub quantity: f64,
     pub price: f64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct PaymentInput {
     pub method: String,
     pub amount: f64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateSaleRequest {
     pub store_id: String,
     pub user_id: String,
@@ -60,7 +61,7 @@ pub struct CreateSaleRequest {
     pub payments: Vec<PaymentInput>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct SaleResponse {
     pub id: String,
     pub store_id: String,
@@ -71,7 +72,7 @@ pub struct SaleResponse {
     pub status: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct SaleItemResponse {
     pub id: String,
     pub product_id: String,
@@ -80,14 +81,14 @@ pub struct SaleItemResponse {
     pub subtotal: f64,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct PaymentResponse {
     pub id: String,
     pub method: String,
     pub amount: f64,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct SaleDetailResponse {
     pub sale: SaleResponse,
     pub items: Vec<SaleItemResponse>,

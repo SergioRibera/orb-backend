@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 // ── JWT ───────────────────────────────────────────────────────────────────────
 #[derive(Serialize, Deserialize)]
@@ -17,20 +18,20 @@ pub struct RefreshClaims {
 }
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct LoginResponse {
     pub access_token: String,
     pub refresh_token: String,
     pub token_type: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct RefreshRequest {
     pub refresh_token: String,
 }

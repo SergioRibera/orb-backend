@@ -5,13 +5,23 @@ use actix_web::{
 use uuid::Uuid;
 
 use super::{
-    model::{CreateCustomerRequest, Customer},
+    model::{CreateCustomerRequest, Customer, CustomerResponse},
     service,
 };
 use crate::db::AppState;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/customers",
+    tag = "Customers",
+    request_body = CreateCustomerRequest,
+    responses(
+        (status = 201, description = "Customer created", body = CustomerResponse),
+        (status = 409, description = "Conflict"),
+    )
+)]
 #[post("/customers")]
 pub async fn create_customer(
     state: Data<AppState>,
@@ -22,6 +32,14 @@ pub async fn create_customer(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/customers",
+    tag = "Customers",
+    responses(
+        (status = 200, description = "List of customers", body = Vec<CustomerResponse>),
+    )
+)]
 #[get("/customers")]
 pub async fn list_customers(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Customer>::new(state.db.clone());
@@ -29,6 +47,16 @@ pub async fn list_customers(state: Data<AppState>) -> Result<HttpResponse, AppEr
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/customers/{id}",
+    tag = "Customers",
+    params(("id" = Uuid, Path, description = "Customer ID")),
+    responses(
+        (status = 200, description = "Customer found", body = CustomerResponse),
+        (status = 404, description = "Not found"),
+    )
+)]
 #[get("/customers/{id}")]
 pub async fn get_customer(
     state: Data<AppState>,

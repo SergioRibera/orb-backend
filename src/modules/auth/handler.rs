@@ -4,7 +4,7 @@ use actix_web::{
 };
 
 use super::{
-    model::{LoginRequest, RefreshRequest},
+    model::{LoginRequest, LoginResponse, RefreshRequest},
     service,
 };
 use crate::db::AppState;
@@ -12,6 +12,16 @@ use crate::modules::iam::model::User;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/auth/login",
+    tag = "Auth",
+    request_body = LoginRequest,
+    responses(
+        (status = 200, description = "Login successful", body = LoginResponse),
+        (status = 401, description = "Invalid credentials"),
+    )
+)]
 #[post("/login")]
 pub async fn login(
     state: Data<AppState>,
@@ -22,6 +32,16 @@ pub async fn login(
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/auth/refresh",
+    tag = "Auth",
+    request_body = RefreshRequest,
+    responses(
+        (status = 200, description = "Token refreshed", body = LoginResponse),
+        (status = 401, description = "Invalid or expired refresh token"),
+    )
+)]
 #[post("/refresh")]
 pub async fn refresh(
     state: Data<AppState>,

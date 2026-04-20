@@ -5,13 +5,23 @@ use actix_web::{
 use uuid::Uuid;
 
 use super::{
-    model::{CreateSaleRequest, Sale},
+    model::{CreateSaleRequest, Sale, SaleDetailResponse, SaleResponse},
     service,
 };
 use crate::db::AppState;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/sales",
+    tag = "Sales",
+    request_body = CreateSaleRequest,
+    responses(
+        (status = 201, description = "Sale created", body = SaleResponse),
+        (status = 400, description = "Bad request"),
+    )
+)]
 #[post("/sales")]
 pub async fn create_sale(
     state: Data<AppState>,
@@ -22,6 +32,15 @@ pub async fn create_sale(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/sales/stores/{store_id}",
+    tag = "Sales",
+    params(("store_id" = Uuid, Path, description = "Store ID")),
+    responses(
+        (status = 200, description = "List of sales", body = Vec<SaleResponse>),
+    )
+)]
 #[get("/sales/stores/{store_id}")]
 pub async fn list_sales_by_store(
     state: Data<AppState>,
@@ -33,6 +52,16 @@ pub async fn list_sales_by_store(
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/sales/{sale_id}",
+    tag = "Sales",
+    params(("sale_id" = Uuid, Path, description = "Sale ID")),
+    responses(
+        (status = 200, description = "Sale detail", body = SaleDetailResponse),
+        (status = 404, description = "Not found"),
+    )
+)]
 #[get("/sales/{sale_id}")]
 pub async fn get_sale(state: Data<AppState>, path: Path<Uuid>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Sale>::new(state.db.clone());

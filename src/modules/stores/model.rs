@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -32,13 +33,13 @@ pub struct UserStore {
 
 // ── Store DTOs ────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateStoreRequest {
     pub name: String,
     pub address: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct StoreResponse {
     pub id: String,
     pub name: String,
@@ -47,12 +48,12 @@ pub struct StoreResponse {
 
 // ── Device DTOs ───────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateDeviceRequest {
     pub name: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct DeviceResponse {
     pub id: String,
     pub store_id: String,

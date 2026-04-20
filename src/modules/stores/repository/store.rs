@@ -7,6 +7,7 @@ use crate::shared::repository::PgRepository;
 pub trait StoreRepository: Send + Sync {
     async fn create(&self, name: &str, address: Option<&str>) -> Result<Store, AppError>;
     async fn list(&self) -> Result<Vec<Store>, AppError>;
+    #[allow(dead_code)]
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Store>, AppError>;
 }
 

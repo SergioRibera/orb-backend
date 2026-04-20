@@ -14,6 +14,7 @@ pub trait ProductRepository: Send + Sync {
         cost: Option<Decimal>,
     ) -> Result<Product, AppError>;
     async fn list(&self) -> Result<Vec<Product>, AppError>;
+    #[allow(dead_code)]
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Product>, AppError>;
     async fn assign_category(&self, product_id: Uuid, category_id: Uuid) -> Result<(), AppError>;
     async fn set_price(

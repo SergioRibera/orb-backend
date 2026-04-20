@@ -1,5 +1,3 @@
-use uuid::Uuid;
-
 use crate::modules::catalog::model::Category;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;

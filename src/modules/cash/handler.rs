@@ -5,13 +5,23 @@ use actix_web::{
 use uuid::Uuid;
 
 use super::{
-    model::{CashSession, CloseSessionRequest, OpenSessionRequest},
+    model::{CashSession, CloseSessionRequest, OpenSessionRequest, SessionResponse},
     service,
 };
 use crate::db::AppState;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/cash/sessions",
+    tag = "Cash",
+    request_body = OpenSessionRequest,
+    responses(
+        (status = 201, description = "Session opened", body = SessionResponse),
+        (status = 401, description = "Unauthorized"),
+    )
+)]
 #[post("/cash/sessions")]
 pub async fn open_session(
     state: Data<AppState>,
@@ -22,6 +32,17 @@ pub async fn open_session(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/cash/sessions/{id}/close",
+    tag = "Cash",
+    params(("id" = Uuid, Path, description = "Session ID")),
+    request_body = CloseSessionRequest,
+    responses(
+        (status = 200, description = "Session closed", body = SessionResponse),
+        (status = 404, description = "Session not found"),
+    )
+)]
 #[post("/cash/sessions/{id}/close")]
 pub async fn close_session(
     state: Data<AppState>,
@@ -34,6 +55,15 @@ pub async fn close_session(
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/cash/sessions/stores/{store_id}",
+    tag = "Cash",
+    params(("store_id" = Uuid, Path, description = "Store ID")),
+    responses(
+        (status = 200, description = "List of sessions", body = Vec<SessionResponse>),
+    )
+)]
 #[get("/cash/sessions/stores/{store_id}")]
 pub async fn list_sessions(
     state: Data<AppState>,
@@ -45,6 +75,16 @@ pub async fn list_sessions(
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/cash/sessions/{id}",
+    tag = "Cash",
+    params(("id" = Uuid, Path, description = "Session ID")),
+    responses(
+        (status = 200, description = "Session found", body = SessionResponse),
+        (status = 404, description = "Session not found"),
+    )
+)]
 #[get("/cash/sessions/{id}")]
 pub async fn get_session(
     state: Data<AppState>,

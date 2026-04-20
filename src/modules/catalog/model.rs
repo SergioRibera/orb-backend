@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -38,12 +39,12 @@ pub struct ProductCategory {
 
 // ── Category DTOs ─────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateCategoryRequest {
     pub name: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct CategoryResponse {
     pub id: String,
     pub name: String,
@@ -51,7 +52,7 @@ pub struct CategoryResponse {
 
 // ── Product DTOs ──────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateProductRequest {
     pub name: String,
     pub barcode: Option<String>,
@@ -59,7 +60,7 @@ pub struct CreateProductRequest {
     pub cost: Option<f64>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ProductResponse {
     pub id: String,
     pub name: String,
@@ -70,12 +71,12 @@ pub struct ProductResponse {
 
 // ── ProductPrice DTOs ─────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct SetProductPriceRequest {
     pub price: f64,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ProductPriceResponse {
     pub id: String,
     pub product_id: String,

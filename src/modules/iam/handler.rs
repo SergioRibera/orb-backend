@@ -5,7 +5,10 @@ use actix_web::{
 use uuid::Uuid;
 
 use super::{
-    model::{CreatePermissionRequest, CreateRoleRequest, Permission, RegisterRequest, Role, User},
+    model::{
+        CreatePermissionRequest, CreateRoleRequest, Permission, PermissionResponse,
+        RegisterRequest, RegisterResponse, Role, RoleResponse, User, UserResponse,
+    },
     service,
 };
 use crate::db::AppState;
@@ -14,6 +17,16 @@ use crate::shared::repository::PgRepository;
 
 // ── Users ─────────────────────────────────────────────────────────────────────
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/users",
+    tag = "IAM",
+    request_body = RegisterRequest,
+    responses(
+        (status = 201, description = "User registered", body = RegisterResponse),
+        (status = 409, description = "Email already in use"),
+    )
+)]
 #[post("/users")]
 pub async fn register(
     state: Data<AppState>,
@@ -24,6 +37,14 @@ pub async fn register(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/users",
+    tag = "IAM",
+    responses(
+        (status = 200, description = "List of users", body = Vec<UserResponse>),
+    )
+)]
 #[get("/users")]
 pub async fn list_users(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<User>::new(state.db.clone());
@@ -33,6 +54,16 @@ pub async fn list_users(state: Data<AppState>) -> Result<HttpResponse, AppError>
 
 // ── Roles ─────────────────────────────────────────────────────────────────────
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/roles",
+    tag = "IAM",
+    request_body = CreateRoleRequest,
+    responses(
+        (status = 201, description = "Role created", body = RoleResponse),
+        (status = 409, description = "Conflict"),
+    )
+)]
 #[post("/roles")]
 pub async fn create_role(
     state: Data<AppState>,
@@ -43,6 +74,14 @@ pub async fn create_role(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/roles",
+    tag = "IAM",
+    responses(
+        (status = 200, description = "List of roles", body = Vec<RoleResponse>),
+    )
+)]
 #[get("/roles")]
 pub async fn list_roles(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Role>::new(state.db.clone());
@@ -50,6 +89,19 @@ pub async fn list_roles(state: Data<AppState>) -> Result<HttpResponse, AppError>
     Ok(HttpResponse::Ok().json(res))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/users/{user_id}/roles/{role_id}",
+    tag = "IAM",
+    params(
+        ("user_id" = Uuid, Path, description = "User ID"),
+        ("role_id" = Uuid, Path, description = "Role ID"),
+    ),
+    responses(
+        (status = 204, description = "Role assigned"),
+        (status = 404, description = "Not found"),
+    )
+)]
 #[post("/users/{user_id}/roles/{role_id}")]
 pub async fn assign_role_to_user(
     state: Data<AppState>,
@@ -61,6 +113,19 @@ pub async fn assign_role_to_user(
     Ok(HttpResponse::NoContent().finish())
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/roles/{role_id}/permissions/{permission_id}",
+    tag = "IAM",
+    params(
+        ("role_id" = Uuid, Path, description = "Role ID"),
+        ("permission_id" = Uuid, Path, description = "Permission ID"),
+    ),
+    responses(
+        (status = 204, description = "Permission assigned"),
+        (status = 404, description = "Not found"),
+    )
+)]
 #[post("/roles/{role_id}/permissions/{permission_id}")]
 pub async fn assign_permission_to_role(
     state: Data<AppState>,
@@ -74,6 +139,16 @@ pub async fn assign_permission_to_role(
 
 // ── Permissions ───────────────────────────────────────────────────────────────
 
+#[utoipa::path(
+    post,
+    path = "/api/v1/permissions",
+    tag = "IAM",
+    request_body = CreatePermissionRequest,
+    responses(
+        (status = 201, description = "Permission created", body = PermissionResponse),
+        (status = 409, description = "Conflict"),
+    )
+)]
 #[post("/permissions")]
 pub async fn create_permission(
     state: Data<AppState>,
@@ -84,6 +159,14 @@ pub async fn create_permission(
     Ok(HttpResponse::Created().json(res))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/v1/permissions",
+    tag = "IAM",
+    responses(
+        (status = 200, description = "List of permissions", body = Vec<PermissionResponse>),
+    )
+)]
 #[get("/permissions")]
 pub async fn list_permissions(state: Data<AppState>) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Permission>::new(state.db.clone());

@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -18,7 +19,7 @@ pub struct InventoryMovement {
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateMovementRequest {
     pub product_id: String,
     pub store_id: String,
@@ -27,7 +28,7 @@ pub struct CreateMovementRequest {
     pub reference_id: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct MovementResponse {
     pub id: String,
     pub product_id: String,
@@ -37,7 +38,7 @@ pub struct MovementResponse {
     pub reference_id: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct StockResponse {
     pub product_id: String,
     pub store_id: String,

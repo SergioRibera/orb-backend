@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ pub struct UserAccess {
 
 // ── User DTOs ─────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct RegisterRequest {
     pub name: String,
     pub second_name: Option<String>,
@@ -52,13 +53,13 @@ pub struct RegisterRequest {
     pub password: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct RegisterResponse {
     pub id: String,
     pub email: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct UserResponse {
     pub id: String,
     pub name: String,
@@ -67,12 +68,12 @@ pub struct UserResponse {
 
 // ── Role DTOs ─────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreateRoleRequest {
     pub name: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct RoleResponse {
     pub id: String,
     pub name: String,
@@ -80,12 +81,12 @@ pub struct RoleResponse {
 
 // ── Permission DTOs ───────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CreatePermissionRequest {
     pub name: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct PermissionResponse {
     pub id: String,
     pub name: String,

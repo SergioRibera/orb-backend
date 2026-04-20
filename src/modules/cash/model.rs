@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 // ── DB structs ────────────────────────────────────────────────────────────────
@@ -20,7 +21,7 @@ pub struct CashSession {
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct OpenSessionRequest {
     pub store_id: String,
     pub user_id: String,
@@ -28,13 +29,13 @@ pub struct OpenSessionRequest {
     pub opening_amount: f64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct CloseSessionRequest {
     pub closing_amount: f64,
     pub expected_amount: f64,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct SessionResponse {
     pub id: String,
     pub store_id: String,

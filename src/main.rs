@@ -7,7 +7,10 @@ use actix_web::{
 use tracing::info;
 use tracing_actix_web::TracingLogger;
 use tracing_subscriber::{EnvFilter, fmt::format::FmtSpan};
+use utoipa::OpenApi;
+use utoipa_scalar::{Scalar, Servable};
 
+mod api_docs;
 mod config;
 mod db;
 mod modules;
@@ -83,6 +86,10 @@ async fn main() -> std::io::Result<()> {
             }))
             .wrap(cors)
             .wrap(TracingLogger::default())
+            .service(
+                Scalar::with_url("/docs", api_docs::ApiDoc::openapi())
+                    .custom_html(api_docs::SCALAR_HTML),
+            )
             .service(
                 web::scope("/api/v1")
                     .service(health_check)

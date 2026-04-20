@@ -30,6 +30,7 @@ pub trait SaleRepository: Send + Sync {
         sale_id: Uuid,
         method: &str,
         amount: Decimal,
+        reference: Option<&str>,
     ) -> Result<Payment, AppError>;
     async fn list_items(&self, sale_id: Uuid) -> Result<Vec<SaleItem>, AppError>;
     async fn list_payments(&self, sale_id: Uuid) -> Result<Vec<Payment>, AppError>;
@@ -115,15 +116,17 @@ impl SaleRepository for PgRepository<Sale> {
         sale_id: Uuid,
         method: &str,
         amount: Decimal,
+        reference: Option<&str>,
     ) -> Result<Payment, AppError> {
         sqlx::query_as!(
             Payment,
-            "INSERT INTO payments (sale_id, method, amount)
-             VALUES ($1, $2, $3)
-             RETURNING id, sale_id, method, amount",
+            "INSERT INTO payments (sale_id, method, amount, reference)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id, sale_id, method, amount, reference",
             sale_id,
             method,
             amount,
+            reference,
         )
         .fetch_one(&self.pool)
         .await
@@ -145,7 +148,7 @@ impl SaleRepository for PgRepository<Sale> {
     async fn list_payments(&self, sale_id: Uuid) -> Result<Vec<Payment>, AppError> {
         sqlx::query_as!(
             Payment,
-            "SELECT id, sale_id, method, amount FROM payments WHERE sale_id = $1",
+            "SELECT id, sale_id, method, amount, reference FROM payments WHERE sale_id = $1",
             sale_id,
         )
         .fetch_all(&self.pool)

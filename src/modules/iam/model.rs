@@ -64,6 +64,7 @@ pub struct UserResponse {
     pub id: String,
     pub name: String,
     pub email: String,
+    pub created_at: String,
 }
 
 // ── Role DTOs ─────────────────────────────────────────────────────────────────

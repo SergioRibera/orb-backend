@@ -8,6 +8,7 @@ use super::{
     },
     repository::SaleRepository,
 };
+use crate::modules::inventory::repository::InventoryRepository;
 use crate::shared::errors::AppError;
 
 fn sale_to_response(s: &super::model::Sale) -> SaleResponse {
@@ -19,11 +20,13 @@ fn sale_to_response(s: &super::model::Sale) -> SaleResponse {
         folio: s.folio.clone(),
         total: s.total.to_f64().unwrap_or(0.0),
         status: s.status.clone(),
+        created_at: s.created_at.to_string(),
     }
 }
 
 pub async fn create_sale(
     repo: &impl SaleRepository,
+    inv_repo: &impl InventoryRepository,
     req: CreateSaleRequest,
 ) -> Result<SaleDetailResponse, AppError> {
     let store_id = Uuid::parse_str(&req.store_id)
@@ -71,16 +74,22 @@ pub async fn create_sale(
             price: si.price.to_f64().unwrap_or(0.0),
             subtotal: si.subtotal.to_f64().unwrap_or(0.0),
         });
+        inv_repo
+            .create(product_id, store_id, "sale", -quantity, Some(sale.id))
+            .await?;
     }
 
     let mut payment_responses = Vec::new();
     for payment in &req.payments {
         let amount = Decimal::from_f64(payment.amount).unwrap_or_default();
-        let p = repo.add_payment(sale.id, &payment.method, amount).await?;
+        let p = repo
+            .add_payment(sale.id, &payment.method, amount, payment.reference.as_deref())
+            .await?;
         payment_responses.push(PaymentResponse {
             id: p.id.to_string(),
             method: p.method,
             amount: p.amount.to_f64().unwrap_or(0.0),
+            reference: p.reference,
         });
     }
 
@@ -125,6 +134,7 @@ pub async fn get_sale_detail(
                 id: p.id.to_string(),
                 method: p.method,
                 amount: p.amount.to_f64().unwrap_or(0.0),
+                reference: p.reference,
             })
             .collect(),
     })

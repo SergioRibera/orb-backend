@@ -45,6 +45,7 @@ pub async fn list_users(repo: &impl UserRepository) -> Result<Vec<UserResponse>,
             id: u.id.to_string(),
             name: u.name,
             email: u.email,
+            created_at: u.created_at.to_string(),
         })
         .collect())
 }

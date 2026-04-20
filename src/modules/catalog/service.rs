@@ -5,7 +5,7 @@ use uuid::Uuid;
 use super::{
     model::{
         CategoryResponse, CreateCategoryRequest, CreateProductRequest, ProductPriceResponse,
-        ProductResponse, SetProductPriceRequest,
+        ProductResponse, SetProductPriceRequest, UpdateProductRequest,
     },
     repository::{CategoryRepository, ProductRepository},
 };
@@ -48,6 +48,38 @@ pub async fn create_product(
             cost,
         )
         .await?;
+    if let Some(cat_ids) = req.category_ids {
+        for id_str in cat_ids {
+            if let Ok(cat_id) = Uuid::parse_str(&id_str) {
+                let _ = repo.assign_category(p.id, cat_id).await;
+            }
+        }
+    }
+    Ok(ProductResponse {
+        id: p.id.to_string(),
+        name: p.name,
+        barcode: p.barcode,
+        description: p.description,
+        cost: p.cost.and_then(|d| d.to_f64()),
+    })
+}
+
+pub async fn update_product(
+    repo: &impl ProductRepository,
+    id: Uuid,
+    req: UpdateProductRequest,
+) -> Result<ProductResponse, AppError> {
+    let cost = req.cost.and_then(Decimal::from_f64);
+    let p = repo
+        .update(
+            id,
+            req.name.as_deref(),
+            req.barcode.as_deref(),
+            req.description.as_deref(),
+            cost,
+        )
+        .await?
+        .ok_or(AppError::NotFound)?;
     Ok(ProductResponse {
         id: p.id.to_string(),
         name: p.name,
@@ -79,6 +111,14 @@ pub async fn assign_category(
     category_id: Uuid,
 ) -> Result<(), AppError> {
     repo.assign_category(product_id, category_id).await
+}
+
+pub async fn remove_category(
+    repo: &impl ProductRepository,
+    product_id: Uuid,
+    category_id: Uuid,
+) -> Result<(), AppError> {
+    repo.remove_category(product_id, category_id).await
 }
 
 pub async fn set_price(

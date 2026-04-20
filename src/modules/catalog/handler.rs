@@ -1,5 +1,5 @@
 use actix_web::{
-    HttpResponse, get, post,
+    HttpResponse, delete, get, post, put,
     web::{Data, Json, Path},
 };
 use uuid::Uuid;
@@ -7,7 +7,7 @@ use uuid::Uuid;
 use super::{
     model::{
         Category, CategoryResponse, CreateCategoryRequest, CreateProductRequest, Product,
-        ProductPriceResponse, ProductResponse, SetProductPriceRequest,
+        ProductPriceResponse, ProductResponse, SetProductPriceRequest, UpdateProductRequest,
     },
     service,
 };
@@ -90,6 +90,30 @@ pub async fn list_products(state: Data<AppState>) -> Result<HttpResponse, AppErr
 }
 
 #[utoipa::path(
+    put,
+    path = "/api/v1/products/{product_id}",
+    tag = "Catalog",
+    params(
+        ("product_id" = Uuid, Path, description = "Product ID"),
+    ),
+    request_body = UpdateProductRequest,
+    responses(
+        (status = 200, description = "Product updated", body = ProductResponse),
+        (status = 404, description = "Not found"),
+    )
+)]
+#[put("/products/{product_id}")]
+pub async fn update_product(
+    state: Data<AppState>,
+    path: Path<Uuid>,
+    body: Json<UpdateProductRequest>,
+) -> Result<HttpResponse, AppError> {
+    let repo = PgRepository::<Product>::new(state.db.clone());
+    let res = service::update_product(&repo, path.into_inner(), body.into_inner()).await?;
+    Ok(HttpResponse::Ok().json(res))
+}
+
+#[utoipa::path(
     post,
     path = "/api/v1/products/{product_id}/categories/{category_id}",
     tag = "Catalog",
@@ -110,6 +134,30 @@ pub async fn assign_category(
     let repo = PgRepository::<Product>::new(state.db.clone());
     let (product_id, category_id) = path.into_inner();
     service::assign_category(&repo, product_id, category_id).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
+#[utoipa::path(
+    delete,
+    path = "/api/v1/products/{product_id}/categories/{category_id}",
+    tag = "Catalog",
+    params(
+        ("product_id" = Uuid, Path, description = "Product ID"),
+        ("category_id" = Uuid, Path, description = "Category ID"),
+    ),
+    responses(
+        (status = 204, description = "Category removed"),
+        (status = 404, description = "Not found"),
+    )
+)]
+#[delete("/products/{product_id}/categories/{category_id}")]
+pub async fn remove_category(
+    state: Data<AppState>,
+    path: Path<(Uuid, Uuid)>,
+) -> Result<HttpResponse, AppError> {
+    let repo = PgRepository::<Product>::new(state.db.clone());
+    let (product_id, category_id) = path.into_inner();
+    service::remove_category(&repo, product_id, category_id).await?;
     Ok(HttpResponse::NoContent().finish())
 }
 

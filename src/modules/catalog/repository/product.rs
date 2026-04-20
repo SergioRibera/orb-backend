@@ -13,10 +13,19 @@ pub trait ProductRepository: Send + Sync {
         description: Option<&str>,
         cost: Option<Decimal>,
     ) -> Result<Product, AppError>;
+    async fn update(
+        &self,
+        id: Uuid,
+        name: Option<&str>,
+        barcode: Option<&str>,
+        description: Option<&str>,
+        cost: Option<Decimal>,
+    ) -> Result<Option<Product>, AppError>;
     async fn list(&self) -> Result<Vec<Product>, AppError>;
     #[allow(dead_code)]
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Product>, AppError>;
     async fn assign_category(&self, product_id: Uuid, category_id: Uuid) -> Result<(), AppError>;
+    async fn remove_category(&self, product_id: Uuid, category_id: Uuid) -> Result<(), AppError>;
     async fn set_price(
         &self,
         product_id: Uuid,
@@ -48,6 +57,35 @@ impl ProductRepository for PgRepository<Product> {
         .map_err(|e| AppError::Internal(e.to_string()))
     }
 
+    async fn update(
+        &self,
+        id: Uuid,
+        name: Option<&str>,
+        barcode: Option<&str>,
+        description: Option<&str>,
+        cost: Option<Decimal>,
+    ) -> Result<Option<Product>, AppError> {
+        sqlx::query_as!(
+            Product,
+            "UPDATE products
+             SET name = COALESCE($2, name),
+                 barcode = COALESCE($3, barcode),
+                 description = COALESCE($4, description),
+                 cost = COALESCE($5, cost),
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE id = $1
+             RETURNING id, name, barcode, description, cost, created_at, updated_at",
+            id,
+            name,
+            barcode,
+            description,
+            cost,
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| AppError::Internal(e.to_string()))
+    }
+
     async fn list(&self) -> Result<Vec<Product>, AppError> {
         sqlx::query_as!(
             Product,
@@ -75,6 +113,18 @@ impl ProductRepository for PgRepository<Product> {
         sqlx::query!(
             "INSERT INTO product_categories (product_id, category_id) VALUES ($1, $2)
              ON CONFLICT DO NOTHING",
+            product_id,
+            category_id,
+        )
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AppError::Internal(e.to_string()))?;
+        Ok(())
+    }
+
+    async fn remove_category(&self, product_id: Uuid, category_id: Uuid) -> Result<(), AppError> {
+        sqlx::query!(
+            "DELETE FROM product_categories WHERE product_id = $1 AND category_id = $2",
             product_id,
             category_id,
         )

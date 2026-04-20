@@ -22,7 +22,17 @@ pub async fn create_movement(
         .map(Uuid::parse_str)
         .transpose()
         .map_err(|_| AppError::Internal("Invalid reference_id".into()))?;
-    let quantity = Decimal::from_f64(req.quantity).unwrap_or_default();
+    let raw = Decimal::from_f64(req.quantity).unwrap_or_default();
+    let quantity = match req.r#type.as_str() {
+        "sale" | "return_out" => -raw,
+        "adjustment" => {
+            let current =
+                Decimal::from_f64(repo.stock_by_product_store(product_id, store_id).await?)
+                    .unwrap_or_default();
+            raw - current
+        }
+        _ => raw, // purchase, return_in
+    };
 
     let m = repo
         .create(product_id, store_id, &req.r#type, quantity, reference_id)

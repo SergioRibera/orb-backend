@@ -58,6 +58,15 @@ pub struct CreateProductRequest {
     pub barcode: Option<String>,
     pub description: Option<String>,
     pub cost: Option<f64>,
+    pub category_ids: Option<Vec<String>>,
+}
+
+#[derive(Deserialize, ToSchema)]
+pub struct UpdateProductRequest {
+    pub name: Option<String>,
+    pub barcode: Option<String>,
+    pub description: Option<String>,
+    pub cost: Option<f64>,
 }
 
 #[derive(Serialize, ToSchema)]

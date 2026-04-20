@@ -9,6 +9,7 @@ use super::{
     service,
 };
 use crate::db::AppState;
+use crate::modules::inventory::model::InventoryMovement;
 use crate::shared::errors::AppError;
 use crate::shared::repository::PgRepository;
 
@@ -28,7 +29,8 @@ pub async fn create_sale(
     body: Json<CreateSaleRequest>,
 ) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<Sale>::new(state.db.clone());
-    let res = service::create_sale(&repo, body.into_inner()).await?;
+    let inv_repo = PgRepository::<InventoryMovement>::new(state.db.clone());
+    let res = service::create_sale(&repo, &inv_repo, body.into_inner()).await?;
     Ok(HttpResponse::Created().json(res))
 }
 

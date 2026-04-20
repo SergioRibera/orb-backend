@@ -44,6 +44,7 @@ pub struct StoreResponse {
     pub id: String,
     pub name: String,
     pub address: Option<String>,
+    pub created_at: String,
 }
 
 // ── Device DTOs ───────────────────────────────────────────────────────────────
@@ -58,4 +59,5 @@ pub struct DeviceResponse {
     pub id: String,
     pub store_id: String,
     pub name: Option<String>,
+    pub created_at: String,
 }

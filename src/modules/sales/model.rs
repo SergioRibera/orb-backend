@@ -34,6 +34,7 @@ pub struct Payment {
     pub sale_id: Uuid,
     pub method: String,
     pub amount: Decimal,
+    pub reference: Option<String>,
 }
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ pub struct SaleItemInput {
 pub struct PaymentInput {
     pub method: String,
     pub amount: f64,
+    pub reference: Option<String>,
 }
 
 #[derive(Deserialize, ToSchema)]
@@ -70,6 +72,7 @@ pub struct SaleResponse {
     pub folio: Option<String>,
     pub total: f64,
     pub status: String,
+    pub created_at: String,
 }
 
 #[derive(Serialize, ToSchema)]
@@ -86,6 +89,7 @@ pub struct PaymentResponse {
     pub id: String,
     pub method: String,
     pub amount: f64,
+    pub reference: Option<String>,
 }
 
 #[derive(Serialize, ToSchema)]

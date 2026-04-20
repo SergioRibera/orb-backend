@@ -15,6 +15,7 @@ pub async fn create_store(
         id: store.id.to_string(),
         name: store.name,
         address: store.address,
+        created_at: store.created_at.to_string(),
     })
 }
 
@@ -26,6 +27,7 @@ pub async fn list_stores(repo: &impl StoreRepository) -> Result<Vec<StoreRespons
             id: s.id.to_string(),
             name: s.name,
             address: s.address,
+            created_at: s.created_at.to_string(),
         })
         .collect())
 }
@@ -40,6 +42,7 @@ pub async fn create_device(
         id: device.id.to_string(),
         store_id: device.store_id.to_string(),
         name: device.name,
+        created_at: device.created_at.to_string(),
     })
 }
 
@@ -54,6 +57,7 @@ pub async fn list_devices(
             id: d.id.to_string(),
             store_id: d.store_id.to_string(),
             name: d.name,
+            created_at: d.created_at.to_string(),
         })
         .collect())
 }

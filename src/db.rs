@@ -3,8 +3,7 @@ use vaultara_sdk::VaultaraClient;
 
 pub struct AppState {
     pub db: Pool<Postgres>,
-    pub jwt_secret: String,
-    pub vaultara: Option<VaultaraClient>,
+    pub vaultara: VaultaraClient,
 }
 
 pub async fn create_pool(database_url: &str) -> Pool<Postgres> {

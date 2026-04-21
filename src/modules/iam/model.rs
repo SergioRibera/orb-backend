@@ -34,13 +34,6 @@ pub struct Permission {
     pub updated_at: Option<OffsetDateTime>,
 }
 
-// ── Internal ──────────────────────────────────────────────────────────────────
-
-pub struct UserAccess {
-    pub roles: Vec<String>,
-    pub permissions: Vec<String>,
-}
-
 // ── User DTOs ─────────────────────────────────────────────────────────────────
 
 #[derive(Deserialize, ToSchema)]

@@ -55,26 +55,17 @@ async fn main() -> std::io::Result<()> {
 
     let cfg = Config::from_env();
     let pool = create_pool(&cfg.database_url).await;
-    let jwt_secret = cfg.jwt_secret.clone();
     let allowed_origins = cfg.allowed_origins.clone();
     let allowed_methods = cfg.allowed_methods.clone();
 
-    let vaultara: Option<VaultaraClient> = cfg.vaultara_url.as_deref().map(|url| {
-        let mut config = VaultaraConfig::new(url);
-        if let Some(key) = &cfg.vaultara_api_key {
-            config = config.with_api_key(key);
-        }
-        if let Some(tenant) = &cfg.vaultara_tenant_id {
-            config = config.with_tenant(tenant);
-        }
-        VaultaraClient::new(config).expect("failed to create Vaultara client")
-    });
-
-    if vaultara.is_some() {
-        info!("Vaultara IAM integration enabled");
-    } else {
-        info!("Vaultara IAM not configured — falling back to local JWT permissions");
+    let mut vaultara_config = VaultaraConfig::new(&cfg.vaultara_url);
+    if let Some(key) = &cfg.vaultara_api_key {
+        vaultara_config = vaultara_config.with_api_key(key);
     }
+    if let Some(tenant) = &cfg.vaultara_tenant_id {
+        vaultara_config = vaultara_config.with_tenant(tenant);
+    }
+    let vaultara = VaultaraClient::new(vaultara_config).expect("failed to create Vaultara client");
 
     info!("Server running on {}:{}", cfg.host, cfg.port);
 
@@ -102,7 +93,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(AppState {
                 db: pool.clone(),
-                jwt_secret: jwt_secret.clone(),
                 vaultara: vaultara.clone(),
             }))
             .wrap(GrantsMiddleware::with_extractor(
@@ -117,7 +107,6 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/api/v1")
                     .service(health_check)
-                    .configure(modules::auth::config)
                     .configure(modules::iam::config)
                     .configure(modules::stores::config)
                     .configure(modules::catalog::config)

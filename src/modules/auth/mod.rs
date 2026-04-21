@@ -5,5 +5,10 @@ pub mod service;
 use actix_web::web;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::scope("/auth").service(handler::login).service(handler::refresh));
+    cfg.service(
+        web::scope("/auth")
+            .service(handler::authorize)
+            .service(handler::callback)
+            .service(handler::refresh),
+    );
 }

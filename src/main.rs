@@ -55,8 +55,10 @@ async fn main() -> std::io::Result<()> {
 
     let cfg = Config::from_env();
     let pool = create_pool(&cfg.database_url).await;
-    let jwt_secret = cfg.jwt_secret.clone();
     let vaultara_url = cfg.vaultara_url.clone();
+    let vaultara_client_id = cfg.vaultara_client_id.clone();
+    let vaultara_client_secret = cfg.vaultara_client_secret.clone();
+    let vaultara_redirect_uri = cfg.vaultara_redirect_uri.clone();
     let vaultara_api_key = cfg.vaultara_api_key.clone();
     let vaultara_tenant_id = cfg.vaultara_tenant_id.clone();
     let allowed_origins = cfg.allowed_origins.clone();
@@ -97,9 +99,11 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(AppState {
                 db: pool.clone(),
-                jwt_secret: jwt_secret.clone(),
                 vaultara: vaultara.clone(),
                 vaultara_url: vaultara_url.clone(),
+                vaultara_client_id: vaultara_client_id.clone(),
+                vaultara_client_secret: vaultara_client_secret.clone(),
+                vaultara_redirect_uri: vaultara_redirect_uri.clone(),
                 vaultara_api_key: vaultara_api_key.clone(),
                 vaultara_tenant_id: vaultara_tenant_id.clone(),
             }))

@@ -3,9 +3,11 @@ use vaultara_sdk::VaultaraClient;
 
 pub struct AppState {
     pub db: Pool<Postgres>,
-    pub jwt_secret: String,
     pub vaultara: VaultaraClient,
     pub vaultara_url: String,
+    pub vaultara_client_id: String,
+    pub vaultara_client_secret: String,
+    pub vaultara_redirect_uri: String,
     pub vaultara_api_key: Option<String>,
     pub vaultara_tenant_id: Option<String>,
 }

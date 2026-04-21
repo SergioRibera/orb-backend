@@ -13,7 +13,6 @@ actix-web = "4.13.0"
 actix-web-grants = "4.1.2"
 actix-web-httpauth = "0.8.2"
 bcrypt = "0.19.0"
-jsonwebtoken = { version = "10.3.0", default-features = false, features = ["rust_crypto"] }
 serde_json = "1.0.149"
 rust_decimal = { version = "1", features = ["serde-with-float"] }
 sqlx = { version = "0.8.6", features = [
@@ -33,3 +32,4 @@ utoipa = { version = "5", features = ["actix_extras", "uuid", "time", "decimal"]
 utoipa-scalar = { version = "0.3", features = ["actix-web"] }
 vaultara-sdk = { git = "https://github.com/RustLangES/Vaultara" }
 reqwest = { version = "0.12", features = ["json"] }
+urlencoding = "2"

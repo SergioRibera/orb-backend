@@ -1,16 +1,21 @@
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 
 // ── DTOs ──────────────────────────────────────────────────────────────────
 
-#[derive(Deserialize, ToSchema)]
-pub struct LoginRequest {
-    pub email: String,
-    pub password: String,
+#[derive(Serialize, ToSchema)]
+pub struct AuthorizeResponse {
+    pub url: String,
+}
+
+#[derive(Deserialize, IntoParams)]
+pub struct CallbackQuery {
+    pub code: String,
+    pub state: Option<String>,
 }
 
 #[derive(Serialize, ToSchema)]
-pub struct LoginResponse {
+pub struct TokenResponse {
     pub access_token: String,
     pub refresh_token: String,
     pub token_type: String,
@@ -23,7 +28,6 @@ pub struct RefreshRequest {
 
 // ── Internal ──────────────────────────────────────────────────────────────
 
-/// Response from Vaultara's OAuth2 token endpoint
 #[derive(Deserialize)]
 pub struct VaultaraTokenResponse {
     pub access_token: String,

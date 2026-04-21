@@ -34,7 +34,8 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
     info(title = "Orb API", version = "0.1.0"),
     paths(
         // Auth
-        modules::auth::handler::login,
+        modules::auth::handler::authorize,
+        modules::auth::handler::callback,
         modules::auth::handler::refresh,
         // IAM
         modules::iam::handler::register,
@@ -77,8 +78,8 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
     ),
     components(schemas(
         // Auth
-        modules::auth::model::LoginRequest,
-        modules::auth::model::LoginResponse,
+        modules::auth::model::AuthorizeResponse,
+        modules::auth::model::TokenResponse,
         modules::auth::model::RefreshRequest,
         // IAM
         modules::iam::model::RegisterRequest,

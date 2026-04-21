@@ -57,6 +57,8 @@ async fn main() -> std::io::Result<()> {
     let pool = create_pool(&cfg.database_url).await;
     let jwt_secret = cfg.jwt_secret.clone();
     let vaultara_url = cfg.vaultara_url.clone();
+    let vaultara_api_key = cfg.vaultara_api_key.clone();
+    let vaultara_tenant_id = cfg.vaultara_tenant_id.clone();
     let allowed_origins = cfg.allowed_origins.clone();
     let allowed_methods = cfg.allowed_methods.clone();
 
@@ -98,6 +100,8 @@ async fn main() -> std::io::Result<()> {
                 jwt_secret: jwt_secret.clone(),
                 vaultara: vaultara.clone(),
                 vaultara_url: vaultara_url.clone(),
+                vaultara_api_key: vaultara_api_key.clone(),
+                vaultara_tenant_id: vaultara_tenant_id.clone(),
             }))
             .wrap(GrantsMiddleware::with_extractor(
                 middleware::auth::extract_permissions,

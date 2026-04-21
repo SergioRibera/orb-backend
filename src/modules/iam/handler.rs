@@ -34,7 +34,14 @@ pub async fn register(
     body: Json<RegisterRequest>,
 ) -> Result<HttpResponse, AppError> {
     let repo = PgRepository::<User>::new(state.db.clone());
-    let res = service::register(&repo, body.into_inner()).await?;
+    let res = service::register(
+        &repo,
+        &state.vaultara_url,
+        state.vaultara_api_key.as_deref(),
+        state.vaultara_tenant_id.as_deref(),
+        body.into_inner(),
+    )
+    .await?;
     Ok(HttpResponse::Created().json(res))
 }
 

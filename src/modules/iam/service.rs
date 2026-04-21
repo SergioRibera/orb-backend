@@ -1,3 +1,4 @@
+use serde_json::json;
 use uuid::Uuid;
 
 use super::{
@@ -11,6 +12,9 @@ use crate::shared::errors::AppError;
 
 pub async fn register(
     repo: &impl UserRepository,
+    vaultara_url: &str,
+    vaultara_api_key: Option<&str>,
+    tenant_id: Option<&str>,
     req: RegisterRequest,
 ) -> Result<RegisterResponse, AppError> {
     if repo.email_exists(&req.email).await? {
@@ -19,6 +23,11 @@ pub async fn register(
 
     let password_hash = bcrypt::hash(&req.password, bcrypt::DEFAULT_COST)
         .map_err(|e| AppError::Internal(e.to_string()))?;
+
+    // Create user in Vaultara if tenant_id is configured
+    if let (Some(tenant), Some(api_key)) = (tenant_id, vaultara_api_key) {
+        create_vaultara_user(vaultara_url, api_key, tenant, &req).await?;
+    }
 
     let user = repo
         .create(
@@ -35,6 +44,48 @@ pub async fn register(
         id: user.id.to_string(),
         email: user.email,
     })
+}
+
+async fn create_vaultara_user(
+    vaultara_url: &str,
+    api_key: &str,
+    tenant_id: &str,
+    req: &RegisterRequest,
+) -> Result<(), AppError> {
+    let url = format!(
+        "{}/api/v1/tenants/{}/users",
+        vaultara_url.trim_end_matches('/'),
+        tenant_id
+    );
+
+    let client = reqwest::Client::new();
+    let body = json!({
+        "username": req.email,
+        "email": req.email,
+        "password": req.password,
+        "first_name": req.name,
+        "last_name": req.first_surname.as_deref().unwrap_or(""),
+        "status": "active",
+        "email_verified": false,
+    });
+
+    let response = client
+        .post(&url)
+        .header("Authorization", format!("Bearer {}", api_key))
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| AppError::Internal(format!("Failed to create Vaultara user: {}", e)))?;
+
+    if !response.status().is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        return Err(AppError::Internal(format!("Vaultara user creation failed: {}", error_text)));
+    }
+
+    Ok(())
 }
 
 pub async fn list_users(repo: &impl UserRepository) -> Result<Vec<UserResponse>, AppError> {

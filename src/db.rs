@@ -6,6 +6,8 @@ pub struct AppState {
     pub jwt_secret: String,
     pub vaultara: VaultaraClient,
     pub vaultara_url: String,
+    pub vaultara_api_key: Option<String>,
+    pub vaultara_tenant_id: Option<String>,
 }
 
 pub async fn create_pool(database_url: &str) -> Pool<Postgres> {

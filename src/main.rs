@@ -55,10 +55,12 @@ async fn main() -> std::io::Result<()> {
 
     let cfg = Config::from_env();
     let pool = create_pool(&cfg.database_url).await;
+    let jwt_secret = cfg.jwt_secret.clone();
+    let vaultara_url = cfg.vaultara_url.clone();
     let allowed_origins = cfg.allowed_origins.clone();
     let allowed_methods = cfg.allowed_methods.clone();
 
-    let mut vaultara_config = VaultaraConfig::new(&cfg.vaultara_url);
+    let mut vaultara_config = VaultaraConfig::new(&vaultara_url);
     if let Some(key) = &cfg.vaultara_api_key {
         vaultara_config = vaultara_config.with_api_key(key);
     }
@@ -93,7 +95,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(AppState {
                 db: pool.clone(),
+                jwt_secret: jwt_secret.clone(),
                 vaultara: vaultara.clone(),
+                vaultara_url: vaultara_url.clone(),
             }))
             .wrap(GrantsMiddleware::with_extractor(
                 middleware::auth::extract_permissions,
@@ -107,6 +111,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/api/v1")
                     .service(health_check)
+                    .configure(modules::auth::config)
                     .configure(modules::iam::config)
                     .configure(modules::stores::config)
                     .configure(modules::catalog::config)

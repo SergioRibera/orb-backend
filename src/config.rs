@@ -3,6 +3,7 @@ use std::env;
 #[allow(dead_code)]
 pub struct Config {
     pub database_url: String,
+    pub jwt_secret: String,
     pub port: u16,
     pub host: String,
     pub allowed_origins: Vec<String>,
@@ -17,6 +18,7 @@ impl Config {
     pub fn from_env() -> Self {
         Self {
             database_url: env::var("DATABASE_URL").expect("DATABASE_URL not set"),
+            jwt_secret: env::var("JWT_SECRET").expect("JWT_SECRET not set (used as OAuth2 client_secret)"),
             port: env::var("PORT")
                 .unwrap_or_else(|_| "8080".to_string())
                 .parse()

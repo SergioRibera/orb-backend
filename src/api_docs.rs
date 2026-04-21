@@ -33,6 +33,9 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
 #[openapi(
     info(title = "Orb API", version = "0.1.0"),
     paths(
+        // Auth
+        modules::auth::handler::login,
+        modules::auth::handler::refresh,
         // IAM
         modules::iam::handler::register,
         modules::iam::handler::list_users,
@@ -73,6 +76,10 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
         modules::customers::handler::get_customer,
     ),
     components(schemas(
+        // Auth
+        modules::auth::model::LoginRequest,
+        modules::auth::model::LoginResponse,
+        modules::auth::model::RefreshRequest,
         // IAM
         modules::iam::model::RegisterRequest,
         modules::iam::model::RegisterResponse,
@@ -114,6 +121,7 @@ pub const SCALAR_HTML: &str = r#"<!doctype html>
         modules::customers::model::CustomerResponse,
     )),
     tags(
+        (name = "Auth", description = "Authentication via Vaultara OAuth2"),
         (name = "IAM", description = "Users, roles and permissions"),
         (name = "Stores", description = "Stores and devices"),
         (name = "Catalog", description = "Products and categories"),
